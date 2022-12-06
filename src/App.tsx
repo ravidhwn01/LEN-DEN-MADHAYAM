@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
+
 import './App.css'
 import { BrowserRouter, Route, Router,Routes } from 'react-router-dom'
 import UploadPage from './pages/upload-page'

@@ -1,34 +1,32 @@
 import { Record } from "pocketbase";
-// import React, { useState } from "react";
-// import { useParams } from "react-router-dom";
-
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Client, getFileDownloadPath } from "../utils";
+import { getFileDownloadPath, client } from "../utils/index";
 
-function DownloadPage() {
+ const DownloadFilePage = () => {
   const { id } = useParams();
-
   const [record, setRecord] = useState<Record>();
 
   useEffect(() => {
     if (id) {
-      Client.collection("test")
+      client.collection("test")
         .getOne(id)
         .then((record) => {
           setRecord(record);
         });
     }
   }, [id]);
+
   return (
     <div>
+      <h2>Download file</h2>
       {!!record && (
-        <a download href={getFileDownloadPath(record)}>
-          lele lowde
-        </a>
+        <h1>
+          <a download href={getFileDownloadPath(record)}>
+            Download File
+          </a>
+        </h1>
       )}
     </div>
   );
-}
-
-export default DownloadPage;
+};export default DownloadFilePage

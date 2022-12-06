@@ -1,62 +1,57 @@
-import { ListResult, Record } from "pocketbase";
-import _ from 'lodash'
-import React, { FormEvent, FormEventHandler, useEffect, useRef, useState } from "react";
-import { Client, getFileDownloadPath, ServerUrl, WebAppUrl } from "../utils";
+import { Record } from "pocketbase";
+import { useState, useRef, useEffect, FormEvent } from "react";
+import { getFileDownloadPath, PocketBaseServer, client, FrontendServer } from "../utils/index";
 
-function UploadPage() {
+ const UploadFilePage = () => {
   const [record, setRecord] = useState<Record>();
   const fileRef = useRef<HTMLInputElement>(null);
-  const [allFiles, setAllFiles] = useState<ListResult<Record>>();
+  const [allFiles, setAllFiles] = useState<Record[]>([]);
+
   useEffect(() => {
-    Client.collection("test")
-      .getList(4,3)
+    client.collection("test")
+      .getFullList()
       .then((records) => {
         setAllFiles(records);
       });
   }, []);
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const file = fileRef.current?.files?.[0];  // take first file from file array
+    const file = fileRef.current?.files?.[0];
     const formData = new FormData();
-    console.log(formData);
-        if(file!==undefined){
-            formData.append("file",file);
-            const res = await Client.collection("test").create(formData);
-            setRecord(res)
-            console.log(res)
-        } else{
-            alert("lode file daal! 😆")
-        }
-
+    if (file !== undefined) {
+      formData.append("file", file);
+      const res = await client.collection("test").create(formData);
+      setRecord(res);
+      console.log(res);
+    } else {
+      alert("Please select a file");
+    }
   };
+
   return (
-    <div>
+    <div className="App">
       <form onSubmit={handleSubmit}>
-        <input ref={fileRef} type="file" name="file" />
-        <button type="submit"> daal file</button>
+        <input ref={fileRef} type="file" />
+        <input type="submit" value="Upload" />
       </form>
-      {
-        !!record && (
-            <a href={`${WebAppUrl}/${record.id}`}> {`${WebAppUrl}/${record.id}`} </a>
-        )
-        // !!record && (
-        //     <a href={getFileDownloadPath(record)}> download file </a>
-        // )
-      }
-         <ul>
+      <hr />
+      {record && (
+        <a href={`${FrontendServer}/${record.id}`}> {`${FrontendServer}/${record.id}`}</a>
+      )}
+      {/* <ul>
         {allFiles &&
-          _.map(allFiles.items, (fileRecord) => {
+          _.map(allFiles, (fileRecord) => {
             return (
               <li>
-                <a href={getFileDownloadPath(fileRecord)}>
+                <a href={getFileUrl(fileRecord)}>
                   Download The File {fileRecord.file}
                 </a>
               </li>
             );
           })}
-      </ul>
+      </ul> */}
     </div>
   );
-}
-
-export default UploadPage;
+};
+export default UploadFilePage;
